@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Lab 6 - Unsplash</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    input, button { padding: 10px; margin: 5px; }
+    .gallery img { width: 200px; margin: 10px; border-radius: 8px; }
+    .gallery { display: flex; flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+
+  <h2>Unsplash API</h2>
+  <input type="text" id="searchTerm" placeholder="Search for...">
+  <button onclick="searchUsingXHR()">Search using XHR</button>
+  <button onclick="searchUsingFetch()">Search using fetch (promises)</button>
+  <button onclick="searchUsingAsync()">Search using fetch (async/await)</button>
+
+  <div class="gallery" id="imageGallery"></div>
+
+  <script>
+    const accessKey = "i2CyhHP8jtpQW6XGSmJUAYgyCXxV0XCLhu3zolPu3ac"; // ← هنا ضعي مفتاحك
+
+    function displayImages(images) {
+      const gallery = document.getElementById("imageGallery");
+      gallery.innerHTML = "";
+      images.forEach(img => {
+        const el = document.createElement("img");
+        el.src = img.urls.small;
+        gallery.appendChild(el);
+      });
+    }
+
+    function searchUsingXHR() {
+      const keyword = document.getElementById("searchTerm").value;
+      const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(keyword)}&per_page=8&client_id=${accessKey}`;
+      const xhr = new XMLHttpRequest();
+      xhr.open("GET", url);
+      xhr.onload = function() {
+        const data = JSON.parse(xhr.responseText);
+        displayImages(data.results);
+      };
+      xhr.send();
+    }
+
+    function searchUsingFetch() {
+      const keyword = document.getElementById("searchTerm").value;
+      const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(keyword)}&per_page=8&client_id=${accessKey}`;
+      fetch(url)
+        .then(res => res.json())
+        .then(data => displayImages(data.results));
+    }
+
+    async function searchUsingAsync() {
+      const keyword = document.getElementById("searchTerm").value;
+      const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(keyword)}&per_page=8&client_id=${accessKey}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      displayImages(data.results);
+    }
+  </script>
+
+</body>
+</html>
